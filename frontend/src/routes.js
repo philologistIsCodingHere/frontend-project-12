@@ -1,6 +1,5 @@
-const apiPath = '/api/v1';
-
 export default {
-  loginPath: () => [apiPath, 'login'].join('/'),
-  usersPath: () => [apiPath, 'data'].join('/'),
+  loginPath: () => '/api/v1/login',
+  dataPath: () => '/api/v1/data',
+  notFound: () => '*',
 };
