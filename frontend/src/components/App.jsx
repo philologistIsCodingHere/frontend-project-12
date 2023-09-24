@@ -1,47 +1,23 @@
-import React, { useState, useMemo, useCallback } from 'react';
 import {
-  BrowserRouter as Router,
+  BrowserRouter,
   Routes,
   Route,
-  Link,
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import { Button, Navbar } from 'react-bootstrap';
-
-import Homepage from './Homepage.jsx';
-import Login from './Login.jsx';
-import Notfoundpage from './Notfoundpage.jsx';
-import AuthContext from '../contexts/index.jsx';
+import { Provider } from 'react-redux';
+import { Navbar, Button } from 'react-bootstrap';
 import useAuth from '../hooks/index.jsx';
-
-const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  const logIn = useCallback(() => setLoggedIn(true));
-  const logOut = useCallback(() => {
-    localStorage.removeItem('userId');
-    setLoggedIn(false);
-  });
-
-  const memorizedValue = useMemo(() => ({
-    logIn,
-    logOut,
-    loggedIn,
-  }), [logIn, logOut, loggedIn]);
-
-  return (
-    <AuthContext.Provider value={memorizedValue}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+import Login from './Login.jsx';
+import MainPage from './MainPage.jsx';
+import AuthProvider from '../contexts/AuthProvider.jsx';
+import store from '../slices/index.js';
 
 const PrivateRoute = ({ children }) => {
   const auth = useAuth();
   const location = useLocation();
   return (
-    auth.loggedIn ? children : <Navigate to="/login" state={{ from: location }} />
+    auth.user ? children : <Navigate to="/login" state={{ from: location }} />
   );
 };
 
@@ -49,37 +25,38 @@ const AuthButton = () => {
   const auth = useAuth();
 
   return (
-    auth.loggedIn
+    auth.user
       ? <Button onClick={auth.logOut}>Log out</Button>
-      : ''
+      : null
   );
 };
 
 const App = () => (
-  <AuthProvider>
-    <Router>
-      <Navbar className="d-flex justify-content-between px-3 mb-3" bg="light" expand="lg">
-        <Navbar.Brand as={Link} to="/">Chat</Navbar.Brand>
-        <AuthButton />
-      </Navbar>
-
-      <div className="d-flex flex-column h-100">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Notfoundpage />} />
-          <Route
-            path="/"
-            element={(
-              <PrivateRoute>
-                <Homepage />
-              </PrivateRoute>
-            )}
-          />
-        </Routes>
-      </div>
-
-    </Router>
-  </AuthProvider>
+  <Provider store={store}>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="d-flex flex-column h-100">
+          <Navbar className="shadow-sm" bg="white" expand="lg">
+            <div className="container">
+              <a href="/" className="navbar-brand">Chat</a>
+              <AuthButton />
+            </div>
+          </Navbar>
+          <Routes>
+            <Route
+              path="/"
+              element={(
+                <PrivateRoute>
+                  <MainPage />
+                </PrivateRoute>
+              )}
+            />
+            <Route path="login" element={<Login />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
+  </Provider>
 );
 
 export default App;
