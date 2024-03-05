@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { Navbar, Button } from 'react-bootstrap';
-import useAuth from '../hooks/index.jsx';
+import { useAuth } from '../hooks/index.jsx';
 import Login from './Login.jsx';
 import MainPage from './MainPage.jsx';
 import AuthProvider from '../contexts/AuthProvider.jsx';

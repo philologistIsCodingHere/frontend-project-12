@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import routes from '../routes.js';
 import Channels from './Channels.jsx';
 import Chat from './Chat.jsx';
-import useAuth from '../hooks/index.jsx';
+import { useAuth } from '../hooks/index.jsx';
 import { actions } from '../slices/channelsSlice.js';
 
 const MainPage = () => {
